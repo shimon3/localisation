@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test d'information utilisateur</title>
+</head>
+<body>
+    <h2>Test d'information utilisateur</h2>
+    <p id="info"></p>
+    <p id="location"></p>
+
+    <script>
+        // Détection appareil + navigateur
+        const userAgent = navigator.userAgent;
+        let deviceType = /Mobile|Android/i.test(userAgent) ? "Téléphone" : "Ordinateur";
+
+        let browser = "Navigateur inconnu";
+        if (userAgent.includes("Chrome")) browser = "Chrome";
+        else if (userAgent.includes("Firefox")) browser = "Firefox";
+        else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) browser = "Safari";
+        else if (userAgent.includes("Edge")) browser = "Edge";
+
+        let androidVersion = userAgent.match(/Android\s+([\d.]+)/);
+        let version = androidVersion ? androidVersion[1] : "Non Android ou non détecté";
+
+        document.getElementById("info").innerHTML = `
+            🧾 Appareil : ${deviceType}<br>
+            🌐 Navigateur : ${browser}<br>
+            🤖 Version Android : ${version}<br>
+            📋 User-Agent : ${userAgent}
+        `;
+
+        // Géolocalisation
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                document.getElementById("location").innerHTML = `📍 Localisation : Latitude ${lat}, Longitude ${lon}`;
+            }, () => {
+                document.getElementById("location").innerHTML = "🚫 Autorisation de localisation refusée.";
+            });
+        } else {
+            document.getElementById("location").innerHTML = "🚫 Géolocalisation non supportée.";
+        }
+    </script>
+</body>
+</html>
